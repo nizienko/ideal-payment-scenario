@@ -1,0 +1,56 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.3.10'
+    id 'io.qameta.allure' version '2.5'
+}
+
+group 'com.github.nizienko'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compile "org.testcontainers:junit-jupiter:1.10.1"
+    compile "org.testcontainers:selenium:1.10.1"
+
+    compile "org.seleniumhq.selenium:selenium-java:3.141.5"
+
+    compile "io.qameta.allure:allure-java-commons:2.7.0"
+    compile "io.qameta.allure:allure2-model-pojo:1.0.0"
+    compile "io.qameta.allure:allure-gradle:2.5"
+
+    compile "com.willowtreeapps.assertk:assertk-jvm:0.12"
+
+    compile "org.apache.httpcomponents:fluent-hc:4.5.5"
+    compile "com.google.code.gson:gson:1.7.2"
+
+    compile "org.apache.logging.log4j:log4j-api:2.11.1"
+    compile "org.apache.logging.log4j:log4j-core:2.11.1"
+
+    compile "org.junit.jupiter:junit-jupiter-api:5.2.0"
+    compile "org.junit.platform:junit-platform-launcher:1.2.0"
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+allure {
+    autoconfigure = false
+    aspectjweaver = false
+    version = '2.6.0'
+
+    useJUnit5 {
+        version = '2.6.0'
+    }
+}
+
+test {
+    useJUnitPlatform()
+}

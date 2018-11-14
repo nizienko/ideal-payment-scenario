@@ -13,9 +13,7 @@ fun <R> WebDriver.apiKeyPage(function: ApiKeysPage.() -> R) = ApiKeysPage(this).
 
 class ApiKeysPage(webDriver: WebDriver) {
     val apiKeyTable = webDriver.block<ApiKeyTable>("Api key table") { sc ->
-        attempt {
-            sc.findElement(By.className("table-apikeys"))
-        }
+        sc.findElement(By.className("table-apikeys"))
     }
 
     class ApiKeyTable(override val settings: BlockSettings) : Block() {

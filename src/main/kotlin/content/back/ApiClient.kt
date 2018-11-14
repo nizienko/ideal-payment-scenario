@@ -23,6 +23,7 @@ import engine.utils.toData
 
 private const val HMAC = "HmacSHA256"
 
+fun apiClient(key: ApiKey) = ApiClient(key)
 
 class ApiClient(private val key: ApiKey) {
     private val gson = Gson()

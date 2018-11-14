@@ -21,6 +21,7 @@ object allure {
 }
 
 inline fun <O> step(text: String, crossinline block: () -> O): O {
+    log.info(text)
     val uuid = UUID.randomUUID()
     allure.startStep(uuid, text)
     try {
@@ -36,6 +37,7 @@ inline fun <O> step(text: String, crossinline block: () -> O): O {
 }
 
 inline fun <W> WebDriver.uiStep(text: String, crossinline block: WebDriver.() -> W): W {
+    log.info(text)
     val uuid = UUID.randomUUID()
     allure.startStep(uuid, text)
     try {
@@ -52,7 +54,7 @@ inline fun <W> WebDriver.uiStep(text: String, crossinline block: WebDriver.() ->
 }
 
 fun addAttachment(name: String = "Screenshot", text: String) {
-    addAttachment("response", "text/html", text.toByteArray())
+    addAttachment(name, "text/html", text.toByteArray())
 }
 
 fun addAttachment(name: String = "Screenshot", type: String = "image/png", data: ByteArray) {

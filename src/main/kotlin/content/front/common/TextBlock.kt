@@ -10,8 +10,8 @@ open class TextBlock(override val settings: BlockSettings) : Block() {
     fun text(): String = thisElement.text
 }
 
-fun Assert<TextBlock>.hasText(other: String?, ignoreCase: Boolean = false) =
-    step("Check that '${actual.name}' has text '$other'") {
+fun Assert<TextBlock>.textIs(other: String?, ignoreCase: Boolean = false) =
+    step("Check that '${actual.name}' text is '$other'") {
         val actualText = actual.text()
         if (actualText.equals(other, ignoreCase)) return@step
         fail(other, actualText)

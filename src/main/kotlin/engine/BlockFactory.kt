@@ -1,8 +1,10 @@
 package engine
 
+import engine.utils.attempt
 import engine.utils.uiStep
 import engine.utils.webDriver
 import org.openqa.selenium.*
+import kotlin.NoSuchElementException
 import kotlin.reflect.full.primaryConstructor
 
 abstract class Block {
@@ -13,10 +15,12 @@ abstract class Block {
     val thisElement: WebElement
         get() = with(settings) {
             return if (cached.not()) {
-                searchFunction(searchContext())
+                attempt {
+                    searchFunction(searchContext())
+                }
             } else {
                 if (_thisElement == null) {
-                    _thisElement = searchFunction(searchContext())
+                    _thisElement = attempt { searchFunction(searchContext()) }
                     _thisElement!!
                 } else {
                     _thisElement!!

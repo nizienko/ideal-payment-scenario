@@ -41,7 +41,7 @@ class HostedCheckOutPage(private val webDriver: WebDriver) {
         val payButton = block<ButtonBlock>("Pay") {it.findElement(By.id("primaryButton"))}
         val cacnelButton = block<ButtonBlock>("Cancel") {it.findElement(By.id("secondaryButton"))}
 
-        fun selectBank(name: String) = webDriver.uiStep("Selecting bank '$name'") {
+        fun selectBank(name: String) = webDriver.uiStep("Select bank '$name'") {
             Select(thisElement.findElement(By.id("issuerId"))).selectByVisibleText(name)
         }
     }

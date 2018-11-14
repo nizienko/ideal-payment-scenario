@@ -12,8 +12,6 @@ open class ConfigurationCenterPage(webDriver: WebDriver) {
     }
 
     val sideBar = webDriver.block<SideBarBlock>("Side bar") { sc ->
-        attempt(3) {
-            sc.findElement(By.id("sidebar"))
-        }
+        sc.findElement(By.id("sidebar"))
     }
 }

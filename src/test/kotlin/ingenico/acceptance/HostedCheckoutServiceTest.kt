@@ -1,9 +1,9 @@
 package ingenico.acceptance
 
 import content.LoginData
-import content.back.ApiClient
+import content.back.apiClient
 import content.back.data.*
-import content.front.common.hasText
+import content.front.common.textIs
 import content.front.pages.configurationCenter.apiKeyPage
 import content.front.pages.configurationCenter.dashboardPage
 import content.front.pages.configurationCenter.loginPage
@@ -14,6 +14,7 @@ import engine.utils.using
 import ingenico.UI
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import assertk.assert
 
 @DisplayName("Hosted Checkout Service")
 class HostedCheckoutServiceTest : UI() {
@@ -21,7 +22,7 @@ class HostedCheckoutServiceTest : UI() {
     @Test
     @DisplayName("iDEAL payment")
     fun idealPayment() = using(chromeContainer.webDriver) {
-        val loginData = LoginData("xxx", "xxx")
+        val loginData = LoginData("nizienko@outlook.com", "pl@giat12S")
 
         val apiKey =
             step("Task 1: Get API apiKeyId and secretApiKey") {
@@ -38,7 +39,7 @@ class HostedCheckoutServiceTest : UI() {
 
         val partialUrl =
             step("Task 2: Get Partial-Redirect URL") {
-                ApiClient(apiKey).hostedCheckoutsRequest(
+                apiClient(apiKey).hostedCheckoutsRequest(
                     Order(
                         AmountOfMoney("EUR", 100),
                         Customer(113, BillingAddress(countryCode = "NL")),
@@ -50,11 +51,12 @@ class HostedCheckoutServiceTest : UI() {
         step("Task 3: Make a payment") {
             hostedCheckoutPage {
                 open("https://payment.$partialUrl")
-                assertk.assert(shoppingCart.amount).hasText("EUR 1.00")
+                assert(shoppingCart.amount).textIs("EUR 1.00")
                 paymentProducts.ideal.click()
+
                 with(paymentOptions) {
-                    assertk.assert(shoppingCart.amount).hasText("EUR 1.00")
-                    assertk.assert(paymentProductName).hasText("iDEAL")
+                    assert(shoppingCart.amount).textIs("EUR 1.00")
+                    assert(paymentProductName).textIs("iDEAL")
 
                     selectBank("Issuer Simulation V3 - ING")
                     payButton.click()
@@ -62,8 +64,8 @@ class HostedCheckoutServiceTest : UI() {
             }
             idealIssuerSimulatorPage { confrimTransaction.click() }
             hostedCheckoutPage {
-                assertk.assert(shoppingCart.amount).hasText("EUR 1.00")
-                assertk.assert(paymentOptions).hasText("Your payment status\nYour payment is successful.")
+                assert(shoppingCart.amount).textIs("EUR 1.00")
+                assert(paymentOptions).textIs("Your payment status\nYour payment is successful.")
             }
         }
     }

@@ -19,43 +19,38 @@ import assertk.assert
 @DisplayName("Hosted Checkout Service")
 class HostedCheckoutServiceTest : UI() {
 
+
     @Test
     @DisplayName("iDEAL payment")
     fun idealPayment() = using(chromeContainer.webDriver) {
         val loginData = LoginData("nizienko@outlook.com", "pl@giat12S")
 
-        val apiKey =
-            step("Task 1: Get API apiKeyId and secretApiKey") {
-                loginPage {
-                    open()
-                    logInWith(loginData)
-                }
-                dashboardPage {
-                    if (menuButton.isDisplayed()) menuButton.click()
-                    sideBar.apiKeys.click()
-                }
-                apiKeyPage { apiKeyTable.readApiKey() }
-            }
+        val amount = AmountOfMoney("EUR", 100)
+        val customer = Customer(merchantCustomerId = 113, billingAddress = BillingAddress(countryCode = "NL"))
+        val hostedCheckoutParameters = HostedCheckoutSpecificInput(variant = "testVariant", locale = "en_GB")
 
-        val partialUrl =
-            step("Task 2: Get Partial-Redirect URL") {
-                apiClient(apiKey).hostedCheckoutsRequest(
-                    Order(
-                        AmountOfMoney("EUR", 100),
-                        Customer(113, BillingAddress(countryCode = "NL")),
-                        HostedCheckoutSpecificInput("testVariant", "en_GB")
-                    )
-                ).partialRedirectUrl
+        val apiKey = step("Task 1: Get API apiKeyId and secretApiKey") {
+            loginPage {
+                open()
+                logInWith(loginData)
             }
+            dashboardPage { sideBar.apiKeys.click() }
+            apiKeyPage { apiKeyTable.readApiKey() }
+        }
+
+        val partialUrl = step("Task 2: Get Partial-Redirect URL") {
+            apiClient(apiKey).hostedCheckoutsRequest(Order(amount, customer, hostedCheckoutParameters))
+                .partialRedirectUrl
+        }
 
         step("Task 3: Make a payment") {
             hostedCheckoutPage {
                 open("https://payment.$partialUrl")
-                assert(shoppingCart.amount).textIs("EUR 1.00")
+                assert(shoppingCart.amount).textIs(amount.toUiString())
                 paymentProducts.ideal.click()
 
                 with(paymentOptions) {
-                    assert(shoppingCart.amount).textIs("EUR 1.00")
+                    assert(shoppingCart.amount).textIs(amount.toUiString())
                     assert(paymentProductName).textIs("iDEAL")
 
                     selectBank("Issuer Simulation V3 - ING")
@@ -64,7 +59,7 @@ class HostedCheckoutServiceTest : UI() {
             }
             idealIssuerSimulatorPage { confrimTransaction.click() }
             hostedCheckoutPage {
-                assert(shoppingCart.amount).textIs("EUR 1.00")
+                assert(shoppingCart.amount).textIs(amount.toUiString())
                 assert(paymentOptions).textIs("Your payment status\nYour payment is successful.")
             }
         }

@@ -21,7 +21,7 @@ class HostedCheckoutServiceTest : UI() {
 
 
     @Test
-    @DisplayName("iDEAL payment")
+    @DisplayName("Check iDEAL payment")
     fun idealPayment() = using(chromeContainer.webDriver) {
         val loginData = LoginData("nizienko@outlook.com", "pl@giat12S")
 
@@ -50,17 +50,20 @@ class HostedCheckoutServiceTest : UI() {
                 paymentProducts.ideal.click()
 
                 with(paymentOptions) {
-                    assert(shoppingCart.amount).textIs(amount.toUiString())
-                    assert(paymentProductName).textIs("iDEAL")
-
+                    assert {
+                        assert(shoppingCart.amount).textIs(amount.toUiString())
+                        assert(paymentProductName).textIs("iDEAL")
+                    }
                     selectBank("Issuer Simulation V3 - ING")
                     payButton.click()
                 }
             }
             idealIssuerSimulatorPage { confrimTransaction.click() }
             hostedCheckoutPage {
-                assert(shoppingCart.amount).textIs(amount.toUiString())
-                assert(paymentOptions).textIs("Your payment status\nYour payment is successful.")
+                assert {
+                    assert(shoppingCart.amount).textIs(amount.toUiString())
+                    assert(paymentOptions).textIs("Your payment status\nYour payment is successful.")
+                }
             }
         }
     }
